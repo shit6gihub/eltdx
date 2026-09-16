@@ -460,9 +460,7 @@ print(auction.open_price, auction.open_change_pct, auction.open_amount)
 
 ## 联系
 
-- QQ 群：[点击链接加入群聊](https://qm.qq.com/q/zAjpZsvfzy)
-
-- 邮箱：[dapaoxixixi@163.com](mailto:dapaoxixixi@163.com)
+- 交流群：[点击链接加入群聊](https://qm.qq.com/q/zAjpZsvfzy)
 
 ## 许可证
 
