@@ -10,7 +10,6 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: eltdx
-  GATEWAY_PATH: gateway/sida
 
 jobs:
   build:
@@ -39,14 +38,13 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ github.repository }}
           tags: |
-            type=path,pattern=gateway/sida,format=sha
-            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=sida,enable={{is_default_branch}}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./${{ env.GATEWAY_PATH }}/Dockerfile
+          file: ./gateway/sida/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
