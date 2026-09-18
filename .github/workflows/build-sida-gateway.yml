@@ -3,13 +3,11 @@ name: Build SIDA Gateway Image
 on:
   push:
     branches: [main]
-    paths:
-      - 'gateway/sida/**'
   workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: eltdx
+  IMAGE_NAME: eltdx-tq-gateway
 
 jobs:
   build:
@@ -35,9 +33,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: ./gateway/sida/Dockerfile
+          context: ./gateway/sida
           push: true
-          tags: ${{ env.REGISTRY }}/${{ github.repository }}:sida
+          tags: ${{ env.REGISTRY }}/${{ github.repository_owner }}/eltdx-tq-gateway:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
