@@ -131,18 +131,7 @@ def handle_tq_snapshot(params: dict) -> dict:
         if not snaps:
             return {"ErrorId": "-1", "Error": "no data"}
         s = snaps[0]
-
-        # 获取股票名称
-        name = ""
-        try:
-            profile = client.helpers.stock_profile_table([parse_tdx_code(stock_code)])
-            if profile and hasattr(profile, 'rows') and profile.rows:
-                name = getattr(profile.rows[0], 'name', '') or ''
-        except Exception:
-            pass
-
         return {
-            "Name": name,
             "Now": float(s.last_price or 0),
             "LastClose": float(s.pre_close_price or 0),
             "Open": float(s.open_price or 0),
