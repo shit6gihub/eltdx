@@ -11,10 +11,6 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY eltdx-tq-gateway.py .
-COPY start-gateway.sh .
-COPY stop-gateway.sh .
-
-RUN mkdir -p /var/log/eltdx-gateway
 
 EXPOSE 17709
 
@@ -22,4 +18,4 @@ ENV PYTHONUNBUFFERED=1
 ENV GATEWAY_PORT=17709
 ENV GATEWAY_HOST=0.0.0.0
 
-CMD ["./start-gateway.sh"]
+CMD ["python3", "eltdx-tq-gateway.py"]
