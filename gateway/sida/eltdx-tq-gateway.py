@@ -249,7 +249,7 @@ async def health():
     return {
         "status": "ok" if connected else "degraded",
         "connected": connected,
-        "version": "2.3",
+        "version": "2.6",
         "methods_count": methods_count,
     }
 
