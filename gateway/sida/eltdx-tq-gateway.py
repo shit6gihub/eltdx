@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os
 """eltdx-TQ Gateway: 完整通达信行情网关
 
 支持两类接口：
@@ -120,21 +121,29 @@ def handle_tq_more_info(params: dict) -> dict:
         if not snaps:
             return {"ErrorId": "-1", "Error": "no data"}
         s = snaps[0]
-        # 尝试从 helpers 获取更多信息
+        # 安全获取属性值
+        def safe_get(obj, attr, default=0):
+            try:
+                val = getattr(obj, attr, None)
+                return val if val is not None else default
+            except:
+                return default
+        # 从 f10 获取 PE/PB/市值
+        pe = pb = mv = 0.0
         try:
             profile = client.f10.company_profile(stock_code[:6])
-            pe = getattr(profile, 'pe_ratio', 0) or 0
-            pb = getattr(profile, 'pb_ratio', 0) or 0
-            mv = getattr(profile, 'market_value', 0) or 0
+            pe = safe_get(profile, 'pe_ratio', 0)
+            pb = safe_get(profile, 'pb_ratio', 0)
+            mv = safe_get(profile, 'market_value', 0)
         except:
-            pe = pb = mv = 0.0
+            pass
         return {
-            "ZAF": float(s.change_pct or 0),
-            "Zsz": float(mv * 1e8),  # 总市值
-            "Ltsz": float(mv * 0.6 * 1e8),  # 流通市值估算
-            "fHSL": float(s.turnover_rate or 0),
-            "fLianB": float(s.volume_ratio or 0),
-            "Wtb": float(s.turnover_rate or 0),
+            "ZAF": float(safe_get(s, 'change_pct', 0)),
+            "Zsz": float(mv * 1e8) if mv else 0.0,  # 总市值
+            "Ltsz": float(mv * 0.6 * 1e8) if mv else 0.0,  # 流通市值估算
+            "fHSL": 0.0,  # 换手率需要额外计算
+            "fLianB": 0.0,  # 量比需要额外计算
+            "Wtb": 0.0,
             "DynaPE": float(pe),
             "PB_MRQ": float(pb),
             "ErrorId": "0",
@@ -235,6 +244,10 @@ def main():
 
     print(f"Starting eltdx-TQ Gateway on {args.host}:{args.port}...")
     try:
+        # 从环境变量读取 TDX 服务器配置
+        tdx_host = os.environ.get("TDX_HOST", "114.142.142.124")
+        tdx_port = int(os.environ.get("TDX_PORT", "7709"))
+        print(f"Connecting to TDX server: {tdx_host}:{tdx_port}")
         client = TdxClient(timeout=5)
         print(f"Connected: {client.transport.connected_hosts}")
         eltdx_gateway = _EltdxGateway(client)
